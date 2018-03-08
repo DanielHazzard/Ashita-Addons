@@ -221,10 +221,10 @@ function runUnityFighter()
             ashita.timer.once(1.5, openEnter)
             ashita.timer.once(2.0, closeEnter)
             ashita.timer.once(2.2, advanceUpOpen)
-            ashita.timer.once(2.7, advanceUpClose)
-            ashita.timer.once(3.3, openEnter)
-            ashita.timer.once(3.8, closeEnter)
-            ashita.timer.once (4.0, releaseKeys)
+            ashita.timer.once(2.6, advanceUpClose)
+            ashita.timer.once(4.0, openEnter)
+            ashita.timer.once(4.2, closeEnter)
+            ashita.timer.once (4.5, releaseKeys)
         else 
             entityManager2 = AshitaCore:GetDataManager():GetEntity(); 
             for index = 0, 4096, 1 do
