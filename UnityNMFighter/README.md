@@ -6,6 +6,9 @@ Unity NM Fighter
 Allows you to automatically continue to fight Unity NM's until you cap sparks.
 
 
+### notes
+Pet functionality and assistmode is NOT yet active
+
 ### settings
 Settings can be changed using commands or by editing the SETTINGS section in UnityNMFighter.lua
 
@@ -31,3 +34,5 @@ pet [string] - THE SUMMONER PET TO USE
 usecoffers [bool] - true or false 
 
 petweaponskill [string] - The pet weaponskill to use
+
+assistmode [bool] - true for enabled false for disabled
