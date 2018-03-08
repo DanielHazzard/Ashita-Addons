@@ -1,4 +1,4 @@
-##Unity NM Fighter
+Unity NM Fighter
 =============
 Automatic Unity Fighter and coffer user  - addon for Ashita
 -----------------------------------------------
