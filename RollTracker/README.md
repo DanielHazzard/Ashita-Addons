@@ -2,7 +2,7 @@
 ### "Beautifies" Roll Text look 
 
 ### installation
-Place RollTracket folder with the lua file inside into the addons directory of Ashita, load in game via:
+Place RollTracker folder with the lua file inside into the addons directory of Ashita, load in game via:
 
 /addon load rolltracker
 
