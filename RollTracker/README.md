@@ -1,7 +1,7 @@
 # Corsair Rolltracker
 ### "Beautifies" Roll Text look 
 
-###installation
+### installation
 Place RollTracket folder with the lua file inside into the addons directory of Ashita, load in game via:
 
 /addon load rolltracker
@@ -12,5 +12,5 @@ None
 ### settings
 None
 
-###commands
+### commands
 None
