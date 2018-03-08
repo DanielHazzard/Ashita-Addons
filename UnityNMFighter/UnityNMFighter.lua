@@ -218,13 +218,13 @@ function runUnityFighter()
         if currentTarget ~= nil and currentTarget == 'Ethereal Junction' then
             openEnter()
             ashita.timer.once(0.5, closeEnter)
-            ashita.timer.once(1.5, openEnter)
-            ashita.timer.once(2.0, closeEnter)
-            ashita.timer.once(2.2, advanceUpOpen)
-            ashita.timer.once(2.6, advanceUpClose)
+            ashita.timer.once(2.0, openEnter)
+            ashita.timer.once(2.5, closeEnter)
+            ashita.timer.once(2.6, advanceUpOpen)
+            ashita.timer.once(3.0, advanceUpClose)
             ashita.timer.once(4.0, openEnter)
-            ashita.timer.once(4.2, closeEnter)
-            ashita.timer.once (4.5, releaseKeys)
+            ashita.timer.once(4.5, closeEnter)
+            ashita.timer.once(5.0, releaseKeys)
         else 
             entityManager2 = AshitaCore:GetDataManager():GetEntity(); 
             for index = 0, 4096, 1 do
