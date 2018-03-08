@@ -5,6 +5,10 @@ Unity NM Fighter
 
 Allows you to automatically continue to fight Unity NM's until you cap sparks.
 
+### installation
+Place UnityNMFighter folder with the lua file inside into the addons directory of Ashita, load in game via:
+
+/addon load UnityNMFighter
 
 ### notes
 Pet functionality and assistmode is NOT yet active
