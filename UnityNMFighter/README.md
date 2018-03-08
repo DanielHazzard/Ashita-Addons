@@ -1,7 +1,8 @@
 Unity NM Fighter
 =============
-Automatic Unity Fighter and coffer user  - addon for Ashita
------------------------------------------------
+
+#### Automatic Unity Fighter and coffer user  - addon for Ashita
+
 Allows you to automatically continue to fight Unity NM's until you cap sparks.
 
 
