@@ -30,6 +30,8 @@ start - start the fighter
 
 stop - stop the fighter and run the closer
 
+enternity [bool] - set to true if you use the addon ENTERNITY false otherwise
+
 weaponskill [string] - The weaponskill name should be it's full name, for example Chant du Cygne
 
 engagetype [int] - 1 FOR MELEE / 2 FOR PET
