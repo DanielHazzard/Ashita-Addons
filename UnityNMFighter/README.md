@@ -22,7 +22,7 @@ Settings can be changed using commands or by editing the SETTINGS section in Uni
 ### commands
 The following commands are available and can be activated with the prefixes
 
-*/unmf*,  */unitynmfighter* or */unmfighter*
+***/unmf***,  ***/unitynmfighter*** or ***/unmfighter***
 
 start - start the fighter
 
