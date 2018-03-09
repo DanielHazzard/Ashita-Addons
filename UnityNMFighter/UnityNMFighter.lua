@@ -63,6 +63,9 @@ variables.modeActive = 0
 -- true or false, used for additional mules
 variables.assistMode = false
 
+-- If you use ENTERNITY set this to true
+variables.EnternityActive = false
+
 -- -------------------------------------------------------------------------------------------------------------------------- --
 -- DON'T EDIT BELOW THIS LINE ----------------------------------------------------------------------------------------------- --
 -- -------------------------------------------------------------------------------------------------------------------------- --
@@ -220,13 +223,21 @@ function runUnityFighter()
         if currentTarget ~= nil and currentTarget == 'Ethereal Junction' then
             openEnter()
             ashita.timer.once(0.5, closeEnter)
-            ashita.timer.once(2.0, openEnter)
-            ashita.timer.once(2.3, closeEnter)
-            ashita.timer.once(2.7, advanceUpOpen)
-            ashita.timer.once(3.2, advanceUpClose)
-            ashita.timer.once(4.7, openEnter)
-            ashita.timer.once(5.0, closeEnter)
-            ashita.timer.once(5.3, releaseKeys)
+            if variables.EnternityActive == true then
+                ashita.timer.once(2.9, advanceUpOpen)
+                ashita.timer.once(3.4, advanceUpClose)
+                ashita.timer.once(4.2, openEnter)
+                ashita.timer.once(4.6, closeEnter)
+                ashita.timer.once(5.0, releaseKeys)
+            else
+                ashita.timer.once(2.0, openEnter)
+                ashita.timer.once(2.5, closeEnter)
+                ashita.timer.once(2.9, advanceUpOpen)
+                ashita.timer.once(3.4, advanceUpClose)
+                ashita.timer.once(4.2, openEnter)
+                ashita.timer.once(4.6, closeEnter)
+                ashita.timer.once(5.0, releaseKeys)
+            end
         else 
             entityManager2 = AshitaCore:GetDataManager():GetEntity(); 
             for index = 0, 4096, 1 do
@@ -345,22 +356,23 @@ ashita.register_event('command', function(command, ntype)
             print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'AVAILABLE OPTIONS: unmf, unmfighter, unitynmfighter')
             print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. '     /unmfighter start - Starts running UnityNMFighter.')
             print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. '     /unmfighter stop - Stops running UnityNMFighter.')
+            print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. '     /unmfighter enternity # - true or false')
             print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. '     /unmfighter weaponskill # - Sets the weaponskill to use when in combat')
             print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. '     /unmfighter engagetype # - Sets the engage type. Options: 1 = Melee or 2 = Pet')
             print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. '     /unmfighter warptype # - Sets the warp type. Options: 0 (None), 1 (Ring), 2 (Scroll) or 3 (Spell)')
             print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. '     /unmfighter pet # - Sets the Pet to use. Example: Ifrit')
             print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. '     /unmfighter usecoffers # - Use coffers before warp. (true or false).')
             print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. '     /unmfighter petweaponskill # - Sets the pet action to use when available. Example: Flaming Crush')
-        elseif (#args >= 2 and args[2]:lower() == 'start' and variables.isRunning ~= true) then
+        elseif (#args == 2 and args[2]:lower() == 'start' and variables.isRunning ~= true) then
             print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'Beginning Unity NM Fighter.')
             print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'Should any keys get stuck while using UnityNMFighter, Press CTR + ALT + R')
             variables.isRunning = true; 
             performActions()
-        elseif (#args >= 2 and args[2]:lower() == 'stop' and variables.isRunning ~= false) then
+        elseif (#args == 2 and args[2]:lower() == 'stop' and variables.isRunning ~= false) then
             print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'Stopping Unity NM Fighter.')
             variables.isRunning = false
             ashita.timer.once(1, run_Closer)
-        elseif (#args >= 2 and args[2]:lower() == 'weaponskill') then
+        elseif (#args > 2 and args[2]:lower() == 'weaponskill') then
             generated_weaponskill = ""
             for i = 3, #args, 1 do
                 if i == 1 then
@@ -371,7 +383,7 @@ ashita.register_event('command', function(command, ntype)
             end
             variables.weaponskill = trim(generated_weaponskill)
             print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'Weaponskill set: '..variables.weaponskill)
-        elseif (#args >= 2 and args[2]:lower() == 'pet') then
+        elseif (#args > 2 and args[2]:lower() == 'pet') then
             generated_pet = ""
             for i = 3, #args, 1 do
                 if i == 1 then
@@ -381,7 +393,7 @@ ashita.register_event('command', function(command, ntype)
                 end
             end
             variables.Pet = generated_pet
-        elseif (#args >= 2 and args[2]:lower() == 'petweaponskill') then
+        elseif (#args > 2 and args[2]:lower() == 'petweaponskill') then
             generated_petWS = ""
             for i = 3, #args, 1 do
                 if i == 1 then
@@ -392,13 +404,29 @@ ashita.register_event('command', function(command, ntype)
             end
             variables.PetWeaponskill = trim(generated_petWS)
             print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'Pet Weaponskill set: '..variables.PetWeaponskill)
-        elseif (#args >= 2 and args[2]:lower() == 'engagetype') then
+        elseif (#args > 2 and args[2]:lower() == 'engagetype') then
             variables.EngageType = args[3]
-        elseif (#args >= 2 and args[2]:lower() == 'warpmethod') then
+        elseif (#args > 2 and args[2]:lower() == 'warpmethod') then
             variables.WarpMethod = args[3]
-        elseif (#args >= 2 and args[2]:lower() == 'usecoffers') then
-            variables.useCoffers = args[3]
-        elseif (#args >= 2 and args[2]:lower() == 'check') then
+        elseif (#args > 2 and args[2]:lower() == 'usecoffers') then
+            if args[3]:lower() == 'true' then
+                variables.useCoffers = true
+            else
+                variables.useCoffers = false
+            end
+        elseif (#args > 2 and args[2]:lower() == 'enternity') then
+            if args[3]:lower() == 'true' then
+                variables.EnternityActive = true
+            else
+                variables.EnternityActive = false
+            end
+        elseif (#args > 2 and args[2]:lower() == 'assistmode') then
+            if args[3]:lower() == 'true' then
+                variables.assistMode = true
+            else
+                variables.assistMode = false
+            end
+        elseif (#args == 2 and args[2]:lower() == 'check') then
             if variables.isRunning == true then
                 print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'isRunning:            \31\059true\31\207    true / false')
             else
@@ -408,6 +436,11 @@ ashita.register_event('command', function(command, ntype)
                 print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'AssistMode:          \31\059true\31\207    true / false')
             else
                 print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'AssistMode:          \31\059false\31\207   true / false')
+            end
+            if variables.EnternityActive == true then
+                print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'EnternityActive:    \31\059true\31\207    true / false')
+            else
+                print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'EnternityActive:     \31\059false\31\207   true / false')
             end
             print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'Weaponskill name:   \31\059'..variables.weaponskill)
             print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'Engage type:         \31\059'..variables.EngageType..'\31\207      1 = melee / 2 = petmelee')
@@ -420,13 +453,7 @@ ashita.register_event('command', function(command, ntype)
             print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'Warp type:           \31\059'..variables.WarpMethod.. '\31\207      0 = none, 1 = Ring, 2 = Scroll or 3 = Spell')
             print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'Pet name:            \31\059'..variables.Pet)
             print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'Pet weaponskill:     \31\059'..variables.PetWeaponskill)
-        elseif (#args >= 2 and args[2]:lower() == 'debug') then
-
         end
     end
     return true; 
 end); 
-
-
-
-
