@@ -12,7 +12,9 @@ Place UnityNMFighter folder with the lua file inside into the addons directory o
 
 ### notes
 Pet functionality and assistmode is NOT yet active
-Disable ENTERNITY if you have it active before running.
+
+### enternity notes
+If you use the ENTERNITY addon please set variables.EnternityActive to true
 
 ### settings
 Settings can be changed using commands or by editing the SETTINGS section in UnityNMFighter.lua
