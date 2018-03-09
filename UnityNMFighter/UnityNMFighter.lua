@@ -33,6 +33,8 @@ _addon.language = 'english'
 
 variables = {}
 
+AshitaCore:GetChatManager():QueueCommand('/bind !^R /release keys', 1)
+
 -- -------------------------------------------------------------------------------------------------------------------------- --
 -- USER CONFIGURATION ------------------------------------------------------------------------------------------------------- --
 -- -------------------------------------------------------------------------------------------------------------------------- --
@@ -220,10 +222,10 @@ function runUnityFighter()
             ashita.timer.once(0.5, closeEnter)
             ashita.timer.once(2.0, openEnter)
             ashita.timer.once(2.5, closeEnter)
-            ashita.timer.once(2.6, advanceUpOpen)
-            ashita.timer.once(3.0, advanceUpClose)
-            ashita.timer.once(4.0, openEnter)
-            ashita.timer.once(4.5, closeEnter)
+            ashita.timer.once(2.9, advanceUpOpen)
+            ashita.timer.once(3.4, advanceUpClose)
+            ashita.timer.once(4.2, openEnter)
+            ashita.timer.once(4.6, closeEnter)
             ashita.timer.once(5.0, releaseKeys)
         else 
             entityManager2 = AshitaCore:GetDataManager():GetEntity(); 
@@ -351,6 +353,7 @@ ashita.register_event('command', function(command, ntype)
             print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. '     /unmfighter petweaponskill # - Sets the pet action to use when available. Example: Flaming Crush')
         elseif (#args >= 2 and args[2]:lower() == 'start' and variables.isRunning ~= true) then
             print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'Beginning Unity NM Fighter.')
+            print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'Should any keys get stuck while using UnityNMFighter, Press CTR + ALT + R')
             variables.isRunning = true; 
             performActions()
         elseif (#args >= 2 and args[2]:lower() == 'stop' and variables.isRunning ~= false) then
@@ -390,11 +393,11 @@ ashita.register_event('command', function(command, ntype)
             variables.PetWeaponskill = trim(generated_petWS)
             print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'Pet Weaponskill set: '..variables.PetWeaponskill)
         elseif (#args >= 2 and args[2]:lower() == 'engagetype') then
-            variables.EngageType = arg[3]
+            variables.EngageType = args[3]
         elseif (#args >= 2 and args[2]:lower() == 'warpmethod') then
-            variables.WarpMethod = arg[3]
+            variables.WarpMethod = args[3]
         elseif (#args >= 2 and args[2]:lower() == 'usecoffers') then
-            variables.useCoffers = arg[3]
+            variables.useCoffers = args[3]
         elseif (#args >= 2 and args[2]:lower() == 'check') then
             if variables.isRunning == true then
                 print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'isRunning:            \31\059true\31\207    true / false')
