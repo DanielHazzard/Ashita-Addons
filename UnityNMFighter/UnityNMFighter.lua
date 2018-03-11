@@ -49,7 +49,7 @@ variables.weaponskill = 'None'
 variables.EngageType = 1 
 
 -- boolean, true or false
-variables.useCoffers = true
+variables.useCoffers = false
 
 -- Pets name, example Ifrit
 variables.Pet = 'None' 
@@ -87,38 +87,38 @@ require 'ffxi.targets'
 
 -- Queue command functions.
 function escapeOpen()
-    AshitaCore:GetChatManager():QueueCommand('/sendkey ESCAPE down', 1)
+    AshitaCore:GetChatManager():QueueCommand('/sendkey ESCAPE down', -1)
 end
 function escapeClose()
-    AshitaCore:GetChatManager():QueueCommand('/sendkey ESCAPE up', 1)
+    AshitaCore:GetChatManager():QueueCommand('/sendkey ESCAPE up', -1)
 end
 function targetNPC()
-    return AshitaCore:GetChatManager():QueueCommand('/targetnpc', 1)
+    return AshitaCore:GetChatManager():QueueCommand('/targetnpc', -1)
 end
 function pressTabOpen()
-    AshitaCore:GetChatManager():QueueCommand('/sendkey TAB down', 1)
+    AshitaCore:GetChatManager():QueueCommand('/sendkey TAB down', -1)
 end
 function pressTabClose()
-    AshitaCore:GetChatManager():QueueCommand('/sendkey TAB up', 1)
+    AshitaCore:GetChatManager():QueueCommand('/sendkey TAB up', -1)
 end
 function openEnter()
-    AshitaCore:GetChatManager():QueueCommand('/sendkey RETURN down', 1)
+    AshitaCore:GetChatManager():QueueCommand('/sendkey RETURN down', -1)
 end
 function closeEnter()
-    AshitaCore:GetChatManager():QueueCommand('/sendkey RETURN up', 1)
+    AshitaCore:GetChatManager():QueueCommand('/sendkey RETURN up', -1)
 end
 function advanceUpOpen()
-    AshitaCore:GetChatManager():QueueCommand('/sendkey UP down', 1)
+    AshitaCore:GetChatManager():QueueCommand('/sendkey UP down', -1)
 end
 function advanceUpClose()
-    AshitaCore:GetChatManager():QueueCommand('/sendkey UP up', 1)
+    AshitaCore:GetChatManager():QueueCommand('/sendkey UP up', -1)
 end
 function releaseKeys()
-    AshitaCore:GetChatManager():QueueCommand('/release keys', 1)
+    AshitaCore:GetChatManager():QueueCommand('/release keys', -1)
     ashita.timer.once(4, unityFighterCombat)
 end
 function RingUse()
-    AshitaCore:GetChatManager():QueueCommand('/item "Warp Ring" <me>', 1)
+    AshitaCore:GetChatManager():QueueCommand('/item "Warp Ring" <me>', -1)
 end
 function Attack()
     player = AshitaCore:GetDataManager():GetPlayer(); 
@@ -260,17 +260,31 @@ end
 
 -- If Enabled, use all coffers.
 function UseCoffer ()
+    
+    inventory = AshitaCore:GetDataManager():GetInventory(); 
+    usedinv = 0; 
 
-    if variables.cofferCount > 0 then
-        AshitaCore:GetChatManager():QueueCommand('/item "'..variables.cofferName..'" <me>', 0); 
-        variables.cofferCount = variables.cofferCount - 1; 
-        ashita.timer.once(3, UseCoffer)
-    else
-        -- Once finished, if enabled, Warp.
-        if variables.WarpMethod ~= 0 then
-            Warp()
+    for i = 1, inventory:GetContainerMax(0) do
+        item = inv:GetItem(0, i - 1); 
+        if (item ~= nil and item.Id ~= 0) then
+            usedinv = usedinv + 1; 
+        end
+    end
+    count = inv:GetContainerMax(0) - usedinv; 
+
+
+    if variables.useCoffers == true and count >= 2 then
+        if variables.cofferCount > 0 then
+            AshitaCore:GetChatManager():QueueCommand('/item "'..variables.cofferName..'" <me>', 0); 
+            variables.cofferCount = variables.cofferCount - 1; 
+            ashita.timer.once(3, UseCoffer)
         else
-            print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'All coffers were used or none were found. Finished!')
+            -- Once finished, if enabled, Warp.
+            if variables.WarpMethod ~= 0 then
+                Warp()
+            else
+                print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'All coffers were used, not found, or your inventory was full. Finished!')
+            end
         end
     end
 end
@@ -278,14 +292,14 @@ end
 -- If enabled, after you have capped sparks and (if enabled) used all coffers 
 -- run the command to warp.
 function Warp()
-    if variables.warptype == 1 then -- Ring
+    if variables.WarpMethod == 1 then -- Ring
         AshitaCore:GetChatManager():QueueCommand('/equip ring1 "Warp Ring"', 0); 
         ashita.timer.once (11.0, RingUse)
         print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'Attempting to use Warp Ring.')
-    elseif variables.warptype == 2 then -- Scroll
+    elseif variables.WarpMethod == 2 then -- Scroll
         AshitaCore:GetChatManager():QueueCommand('/item "Instant Warp" <me>', 0); 
         print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'Attempting to use Instant Warp.')
-    elseif variables.warptype == 3 then -- Spell
+    elseif variables.WarpMethod == 3 then -- Spell
         AshitaCore:GetChatManager():QueueCommand('/ma "Warp" <me>', 0); 
         print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'Attempting to use Warp spell.')
     end
@@ -341,6 +355,7 @@ ashita.register_event('incoming_text', function(mode, message)
             print = ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'You have capped your sparks. Stopping the addon and running the closing functions.')
         elseif messageLowercase:find('you have completed the following records of eminence objective: subjugation') then
             variables.fightActive = false
+            run_Closer()
         end
     end
     return false; 
