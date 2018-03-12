@@ -28,6 +28,8 @@ start - start the fighter
 
 stop - stop the fighter and run the closer
 
+shutdownoncap [bool] - Will /shutdown when the stop command is called or you reach capped sparks.
+
 enternity [bool] - set to true if you use the addon ENTERNITY false otherwise
 
 weaponskill [string] - The weaponskill name should be it's full name, for example Chant du Cygne
