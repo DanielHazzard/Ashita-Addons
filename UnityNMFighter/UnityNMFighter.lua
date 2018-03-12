@@ -66,6 +66,9 @@ variables.assistMode = false
 -- If you use ENTERNITY set this to true
 variables.EnternityActive = false
 
+-- Shut Down game when capped. Replaces all other close actions
+variables.ShutDownOnCap = false 
+
 -- -------------------------------------------------------------------------------------------------------------------------- --
 -- DON'T EDIT BELOW THIS LINE ----------------------------------------------------------------------------------------------- --
 -- -------------------------------------------------------------------------------------------------------------------------- --
@@ -256,6 +259,9 @@ function runUnityFighter()
     end
 
 
+    return false; 
+
+
 end
 
 -- If Enabled, use all coffers.
@@ -308,33 +314,38 @@ end
 -- Run closer, use coffers and warp if enabled.
 function run_Closer()
 
-    player = AshitaCore:GetDataManager():GetPlayer(); 
-    playerBuffs = player:GetBuffs()
-
-    confrontationActive = false
-    for k, v in pairs(playerBuffs) do
-        if v ~= -1 and v == 276 then
-            confrontationActive = true
-        end
-    end
-
-    if confrontationActive == true then
-        ashita.timer.once (4, run_Closer)
+    if variables.ShutDownOnCap == true then
+        AshitaCore:GetChatManager():QueueCommand('/shutdown', 1)
     else
-        if variables.useCoffers == true and variables.cofferName ~= "None" then
-            inv = AshitaCore:GetDataManager():GetInventory()
-            for index = 1, inv:GetContainerMax(0), 1 do
-                local item = inv:GetItem(0, index); 
-                if (item['Id'] == knownNM_CoffersID[variables.cofferName]) then
-                    variables.cofferCount = variables.cofferCount + item['Count']; 
-                end
+        player = AshitaCore:GetDataManager():GetPlayer(); 
+        playerBuffs = player:GetBuffs()
+
+        confrontationActive = false
+        for k, v in pairs(playerBuffs) do
+            if v ~= -1 and v == 276 then
+                confrontationActive = true
             end
-            print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'Attempting to use all '..variables.cofferName..' ('..variables.cofferCount..')')
-            UseCoffer()
-        elseif variables.useCoffers == false and variables.warptype ~= 0 then
-            print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'Use coffers is disabled, attempting to warp.')
-            Warp()
         end
+
+        if confrontationActive == true then
+            ashita.timer.once (4, run_Closer)
+        else
+            if variables.useCoffers == true and variables.cofferName ~= "None" then
+                inv = AshitaCore:GetDataManager():GetInventory()
+                for index = 1, inv:GetContainerMax(0), 1 do
+                    local item = inv:GetItem(0, index); 
+                    if (item['Id'] == knownNM_CoffersID[variables.cofferName]) then
+                        variables.cofferCount = variables.cofferCount + item['Count']; 
+                    end
+                end
+                print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'Attempting to use all '..variables.cofferName..' ('..variables.cofferCount..')')
+                UseCoffer()
+            elseif variables.useCoffers == false and variables.warptype ~= 0 then
+                print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'Use coffers is disabled, attempting to warp.')
+                Warp()
+            end
+        end
+
     end
 end
 
@@ -354,7 +365,7 @@ ashita.register_event('incoming_text', function(mode, message)
             run_Closer()
             print = ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'You have capped your sparks. Stopping the addon and running the closing functions.')
         elseif messageLowercase:find('you have completed the following records of eminence objective: subjugation') then
-            variables.fightActive = false
+            variables.isRunning = false; 
             run_Closer()
         end
     end
@@ -372,6 +383,7 @@ ashita.register_event('command', function(command, ntype)
             print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. '     /unmfighter start - Starts running UnityNMFighter.')
             print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. '     /unmfighter stop - Stops running UnityNMFighter.')
             print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. '     /unmfighter enternity # - true or false')
+            print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. '     /unmfighter shutdownoncap # - When you cap sparks /shutdown (true or false)')
             print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. '     /unmfighter weaponskill # - Sets the weaponskill to use when in combat')
             print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. '     /unmfighter engagetype # - Sets the engage type. Options: 1 = Melee or 2 = Pet')
             print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. '     /unmfighter warptype # - Sets the warp type. Options: 0 (None), 1 (Ring), 2 (Scroll) or 3 (Spell)')
@@ -387,6 +399,12 @@ ashita.register_event('command', function(command, ntype)
             print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'Stopping Unity NM Fighter.')
             variables.isRunning = false
             ashita.timer.once(1, run_Closer)
+        elseif (#args > 2 and args[2]:lower() == 'shutdownoncap') then
+            if args[3]:lower() == 'true' then
+                variables.ShutDownOnCap = true
+            else
+                variables.ShutDownOnCap = false
+            end
         elseif (#args > 2 and args[2]:lower() == 'weaponskill') then
             generated_weaponskill = ""
             for i = 3, #args, 1 do
@@ -443,31 +461,36 @@ ashita.register_event('command', function(command, ntype)
             end
         elseif (#args == 2 and args[2]:lower() == 'check') then
             if variables.isRunning == true then
-                print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'isRunning:            \31\059true\31\207    true / false')
+                print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'isRunning: \31\059true\31\207    true / false')
             else
-                print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'isRunning:            \31\059false\31\207   true / false')
+                print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'isRunning: \31\059false\31\207   true / false')
             end
             if variables.assistMode == true then
-                print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'AssistMode:          \31\059true\31\207    true / false')
+                print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'AssistMode: \31\059true\31\207    true / false')
             else
-                print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'AssistMode:          \31\059false\31\207   true / false')
+                print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'AssistMode: \31\059false\31\207   true / false')
             end
             if variables.EnternityActive == true then
-                print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'EnternityActive:    \31\059true\31\207    true / false')
+                print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'EnternityActive: \31\059true\31\207    true / false')
             else
-                print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'EnternityActive:     \31\059false\31\207   true / false')
+                print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'EnternityActive: \31\059false\31\207   true / false')
             end
-            print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'Weaponskill name:   \31\059'..variables.weaponskill)
-            print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'Engage type:         \31\059'..variables.EngageType..'\31\207      1 = melee / 2 = petmelee')
-            print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'Mode active:         \31\059'..variables.modeActive.. '\31\207      0 = Melee, 1 = SMN')
+            if variables.ShutDownOnCap == true then
+                print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'Shutdown on Capped: \31\059true\31\207    true / false')
+            else
+                print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'Shutdown on Capped: \31\059false\31\207   true / false')
+            end
+            print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'Weaponskill name: \31\059'..variables.weaponskill)
+            print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'Engage type: \31\059'..variables.EngageType..'\31\207      1 = melee / 2 = petmelee')
+            print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'Mode active: \31\059'..variables.modeActive.. '\31\207      0 = Melee, 1 = SMN')
             if variables.useCoffers == true then
-                print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'useCoffers:           \31\059true\31\207   true / false')
+                print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'useCoffers: \31\059true\31\207   true / false')
             else
-                print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'useCoffers:           \31\059false\31\207  true / false')
+                print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'useCoffers: \31\059false\31\207  true / false')
             end
-            print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'Warp type:           \31\059'..variables.WarpMethod.. '\31\207      0 = none, 1 = Ring, 2 = Scroll or 3 = Spell')
-            print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'Pet name:            \31\059'..variables.Pet)
-            print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'Pet weaponskill:     \31\059'..variables.PetWeaponskill)
+            print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'Warp type: \31\059'..variables.WarpMethod.. '\31\207      0 = none, 1 = Ring, 2 = Scroll or 3 = Spell')
+            print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'Pet name: \31\059'..variables.Pet)
+            print ('\31\200[\31\05UnityNMFighter\31\200]\31\207 ' .. 'Pet weaponskill:\31\059'..variables.PetWeaponskill)
         end
     end
     return true; 
