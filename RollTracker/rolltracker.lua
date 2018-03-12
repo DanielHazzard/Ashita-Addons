@@ -27,6 +27,9 @@ _addon.name = 'rolltracker';
 _addon.version = '1.0.0'; 
 _addon.command = 'rolltracker'; 
 
+last_roll_number = 0; 
+last_roll_name = "None"; 
+
 require 'common'
 
 local corsairRollIDs = {
@@ -456,7 +459,11 @@ function generate_corsair_print(Number, ID, PTMembers, effected_Members)
             messagetoshow = messagetoshow .. bonus..' '..rollDataTable['desc'] .. ')'
         end
 
-        print ('\31\200[\31\05Roll Tracker\31\200]\31\190 ' .. messagetoshow)
+        if corsairRollIDs[ID] ~= last_roll_name and Number ~= last_roll_number then
+            print ('\31\200[\31\05Roll Tracker\31\200]\31\190 ' .. messagetoshow)
+        end
+        last_roll_number = Number
+        last_roll_name = corsairRollIDs[ID]
     end
 end
 
@@ -530,22 +537,3 @@ function table.contains(table, element)
     end
     return false
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
