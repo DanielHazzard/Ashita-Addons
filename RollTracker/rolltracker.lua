@@ -25,10 +25,8 @@
 _addon.author = 'Daniel_H'; 
 _addon.name = 'rolltracker'; 
 _addon.version = '1.0.0'; 
-_addon.command = 'rolltracker'; 
 
-last_roll_number = 0; 
-last_roll_name = "None"; 
+last_roll = ""
 
 require 'common'
 
@@ -63,7 +61,7 @@ local corsairRollIDs = {
     [304] = 'Companion\'s Roll', 
     [305] = 'Avenger\'s Roll', 
     [390] = 'Naturalist\'s Roll', 
-    [391] = 'Runeist Roll', 
+    [391] = 'Runeist\'s Roll', 
 }
 
 local corsairRoll_Data = {
@@ -317,7 +315,6 @@ local corsairRoll_Data = {
     }, 
 }
 
-
 function GetEquipped(slot)
     local inventory = AshitaCore:GetDataManager():GetInventory(); 
     local equipment = inventory:GetEquippedItem(slot); 
@@ -347,7 +344,6 @@ function generate_corsair_print(Number, ID, PTMembers, effected_Members)
         rollName = corsairRollIDs[ID]
         rollDataTable = corsairRoll_Data[corsairRollIDs[ID]]
         messagetoshow = ''
-
         effectTargets = "" effectTargets_I = 0; 
         for _, v in pairs (PTMembers) do
             if effectTargets_I == 0 then
@@ -398,11 +394,8 @@ function generate_corsair_print(Number, ID, PTMembers, effected_Members)
             circledNumber = string.char(0x87, 0x4A)
         elseif Number == 12 then
             circledNumber = string.char(0x87, 0x4B)
-
         end
-
         messagetoshow = '['..effected_Members..'] '..effectTargets..string.char(0x81, 0xC3) .. ' '..rollName.. ' '..circledNumber..' ' 
-        
         if Number > 11 then
             messagetoshow = messagetoshow..'\31\039(Bust!) '
         elseif Number == rollDataTable['lucky'] or Number == 11 then
@@ -412,7 +405,6 @@ function generate_corsair_print(Number, ID, PTMembers, effected_Members)
         else
             messagetoshow = messagetoshow..'\31\205'
         end
-
         if Number > 11 then
             messagetoshow = messagetoshow .. '(-' 
             bonus = rollDataTable['bust']
@@ -420,66 +412,103 @@ function generate_corsair_print(Number, ID, PTMembers, effected_Members)
             messagetoshow = messagetoshow .. '(+' 
             bonus = rollDataTable['rolls'][Number]
         end
-
         ring1 = GetEquipped(13)
         ring2 = GetEquipped(14)
         neck = GetEquipped(9)
-
         if Number < 12 then
             EffectBonus = rollDataTable['effect']
-            if neck == 26038 then -- 7
-                mathedEffect = EffectBonus * 7
-                bonus = bonus + mathedEffect
-            elseif ring1 == 28548 or ring2 == 28548 then -- 5
-                mathedEffect = EffectBonus * 5
-                bonus = bonus + mathedEffect
-            elseif ring1 == 28547 or ring2 == 28547 then --3
-                mathedEffect = EffectBonus * 3
-                bonus = bonus + mathedEffect
+
+            if EffectBonus ~= "Unknown" and rollName ~= "Companion's Roll" then
+                if neck == 26038 then -- 7
+                    mathedEffect = EffectBonus * 7
+                    bonus = bonus + mathedEffect
+                elseif ring1 == 28548 or ring2 == 28548 then -- 5
+                    mathedEffect = EffectBonus * 5
+                    bonus = bonus + mathedEffect
+                elseif ring1 == 28547 or ring2 == 28547 then --3
+                    mathedEffect = EffectBonus * 3
+                    bonus = bonus + mathedEffect
+                end
+            else if rollName == "Companion's Roll" then
+
+                    i = 0
+                    for number in string.gmatch(rollDataTable['effect'], '([^,]+)') do
+                        if i == 0 then
+                            Effect_1 = number
+                        elseif i == 1 then
+                            Effect_2 = number
+                        end
+                        i = i + 1
+                    end
+
+                    i = 0
+                    for number in string.gmatch(bonus, '([^,]+)') do
+                        if i == 0 then
+                            Companion_1 = number
+                            if neck == 26038 then -- 7
+                                mathedEffect = Effect_1 * 7
+                                Companion_1 = Companion_1 + mathedEffect
+                            elseif ring1 == 28548 or ring2 == 28548 then -- 5
+                                mathedEffect = Effect_1 * 5
+                                Companion_1 = Companion_1 + mathedEffect
+                            elseif ring1 == 28547 or ring2 == 28547 then --3
+                                mathedEffect = Effect_1 * 3
+                                Companion_1 = Companion_1 + mathedEffect
+                            end
+                        elseif i == 1 then
+                            Companion_2 = number
+                            if neck == 26038 then -- 7
+                                mathedEffect = Effect_2 * 7
+                                Companion_2 = Companion_2 + mathedEffect
+                            elseif ring1 == 28548 or ring2 == 28548 then -- 5
+                                mathedEffect = Effect_2 * 5
+                                Companion_2 = Companion_2 + mathedEffect
+                            elseif ring1 == 28547 or ring2 == 28547 then --3
+                                mathedEffect = Effect_2 * 3
+                                Companion_2 = Companion_2 + mathedEffect
+                            end
+                        end
+                        i = i + 1
+                    end
+                else
+                    bonus = "Unknown"
+                end
             end
         end
-
         percentageRolls = {'Chaos Roll', 'Corsair\'s Roll', 'Healer\'s Roll', 'Choral Roll', 'Beast Roll', 'Rogue\'s Roll', 'Fighter\'s Roll', 
             'Gallant\'s Roll', 'Scholar\'s Roll', 'Naturalist\'s Roll', 'Bolter\'s Roll', 'Caster\'s Roll', 'Courser\'s Roll', 'Blitzer\'s Roll', 
         'Allies\' Roll', 'Avenger\'s Roll'}
-        
+
         if table.contains(percentageRolls, rollName) then
             messagetoshow = messagetoshow .. bonus..'% ' ..rollDataTable['desc'] .. ')'
         elseif rollName == 'Companion\'s Roll' then
-            i = 0
-            for number in string.gmatch(bonus, '([^,]+)') do
-                if i == 0 then
-                    messagetoshow = messagetoshow .. number .. ' Regain / '
-                else
-                    messagetoshow = messagetoshow .. '+'..number..' Regen)'
-                end
-                i = i + 1
-            end
+            messagetoshow = messagetoshow .. Companion_1 .. ' Regain / '..Companion_2..' Regen)'
         else
             messagetoshow = messagetoshow .. bonus..' '..rollDataTable['desc'] .. ')'
         end
 
-        if corsairRollIDs[ID] ~= last_roll_name and Number ~= last_roll_number then
+
+        if messagetoshow ~= last_roll then
+
             print ('\31\200[\31\05Roll Tracker\31\200]\31\190 ' .. messagetoshow)
+
         end
-        last_roll_number = Number
-        last_roll_name = corsairRollIDs[ID]
+
+        last_roll = messagetoshow
     end
 end
 
 
+
 ashita.register_event('incoming_packet', function(id, size, data)
     local party = AshitaCore:GetDataManager():GetParty()
-
     if id == 0xB then
         zoning_bool = true
     elseif id == 0xA and zoning_bool then
         zoning_bool = false
     end
-
     if not zoning_bool then 
         if id == 0x28 then
-
             local actor = struct.unpack('I', data, 6); 
             local category = ashita.bits.unpack_be(data, 82, 4); 
             local rollNumber = ashita.bits.unpack_be(data, 213, 17); 
@@ -487,37 +516,26 @@ ashita.register_event('incoming_packet', function(id, size, data)
             if category == 6 then
                 roll_id = ashita.bits.unpack_be(data, 86, 10); 
                 if rollNumber and actor == AshitaCore:GetDataManager():GetParty():GetMemberServerId(0) then
-
                     PTMembers = {}
-
                     local target_count = struct.unpack('b', data, 0x09 + 1); 
                     targets = {}
-
                     local offset = 150
-                    
                     for x = 1, target_count do
                         CharID = ashita.bits.unpack_be(data, offset, 32)
                         offset = offset + 123
-
                         for i = 0, 6 do
                             if party:GetMemberName(i) ~= nil and party:GetMemberServerId(i) == CharID then
                                 PTMembers[CharID] = party:GetMemberName(i)
                             end
                         end
                     end
-
                     generate_corsair_print(rollNumber, roll_id, PTMembers, target_count)
                 end
             end
-
-        end
-        
+        end 
     end
-
     return false; 
 end); 
-
-
 
 ashita.register_event('incoming_text', function(mode, message, modifiedmode, modifiedmessage, blocked)
     if message ~= nil then
