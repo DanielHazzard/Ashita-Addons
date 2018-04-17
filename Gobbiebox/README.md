@@ -13,7 +13,9 @@ None
 None
 
 ### commands
-/gb or /gobbiebox #
+/gb #  
+or 
+/gobbiebox #
 
 start - Start trading keys 
 stop - Stops trading keys
