@@ -17,7 +17,3 @@ None
 
 start - Start trading keys 
 stop - Stops trading keys
-
-
-### images
-![Image of Rolltracker](Rolltracker_Screenshot.png)
