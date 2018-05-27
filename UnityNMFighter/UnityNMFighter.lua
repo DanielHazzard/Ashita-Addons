@@ -153,6 +153,8 @@ function Attack()
         Entity = AshitaCore:GetDataManager():GetEntity();
         if Entity:GetStatus(party:GetMemberTargetIndex(0)) ~= 1 then
             AshitaCore:GetChatManager():QueueCommand('/attack', 0);
+         AshitaCore:GetChatManager():QueueCommand('/follow <t>', 0);
+         
         end
     end
 end
