@@ -186,6 +186,8 @@ function performActions()
         ashita.timer.once(0.5, escapeClose)
         ashita.timer.once(1.0, escapeOpen)
         ashita.timer.once(1.5, escapeClose)
+        ashita.timer.once(0.2, escapeOpen)
+        ashita.timer.once(0.5, escapeClose)
         ashita.timer.once(2.0, runUnityFighter)
     end
 end
