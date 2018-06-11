@@ -233,6 +233,14 @@ function unityFighterCombat()
                     target = AshitaCore:GetDataManager():GetTarget();
                     spellData = AshitaCore:GetResourceManager():GetAbilityByName(variables.weaponskill, 0);
 
+                 if target:GetTargetHealthPercent() < 90 then
+            AshitaCore:GetChatManager():QueueCommand("/sendkey numpad7 down", - 1);
+
+            ashita.timer.once(0.2, function()
+              AshitaCore:GetChatManager():QueueCommand("/sendkey numpad7 up", - 1);
+            end)
+          end
+               
                     if party:GetMemberCurrentTP(0) > 1000 and variables.weaponskill ~= "None" and target:GetTargetHealthPercent() > 1 and player:HasWeaponSkill(spellData.Id) then
                         AshitaCore:GetChatManager():QueueCommand('/ws "' .. variables.weaponskill .. '" <t>', 0);
                     end
