@@ -212,7 +212,6 @@ function unityFighterCombat()
     end
 
     if confrontationActive ~= true then -- CONFRONTATION IS DOWN, YOU ARE NOT IN A UNITY FIGHT
-      print('no confrontation')
       ashita.timer.once(10, performActions)
     elseif confrontationActive == true then -- CONFRONTATION IS ACTIVE YOU ARE IN A UNITY FIGHT
       entityName = "None"
