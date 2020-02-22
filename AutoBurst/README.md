@@ -1,4 +1,4 @@
-## AutoBurst Windower Addon v1.3
+## AutoBurst Windower Addon v1.0 Beta
 ### Automatically Bursts when it reads a SKILLCHAIN packet
 
 ---
