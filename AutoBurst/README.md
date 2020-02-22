@@ -28,7 +28,7 @@ With this done the addon should not be ready to work, simply begin skillchaining
 
 
 #### ADVANCED SET UP
-Advanced setup allows you to edit Elements to burst with and tiers. Under User Settings in the LUA the additional customizable options are
+Advanced setup allows you to edit Elements to burst with and tiers. The settings are customised in AutoBurst_config.lua, in the LUA the additional customizable options are
 
 ```
 burstMagic = {
