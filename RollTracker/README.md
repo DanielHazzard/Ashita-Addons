@@ -10,9 +10,9 @@ Place RollTracker folder with the lua file inside into the addons directory of A
 None
 
 ### settings
-* EnableLuckyUnluckyDisplay * (Default: False)
-Adds [ Lucky / Unlucky ] additional text to the roll message, example below:
-John Doe → Chaos Roll [4 / 6] ⑤ (+10.9% Attack)
+* EnableLuckyUnluckyDisplay (Default: False) *
+Adds [ Lucky / Unlucky ] additional text to the roll message, 
+example: John Doe → Chaos Roll [4 / 6] ⑤ (+10.9% Attack)
 
 ### commands
 None
