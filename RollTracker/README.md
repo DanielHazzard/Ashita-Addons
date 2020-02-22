@@ -11,7 +11,7 @@ None
 
 ### settings
 *EnableLuckyUnluckyDisplay (Default: False)* \
-Adds [ Lucky / Unlucky ] additional text to the roll message, \
+Adds [ Lucky / Unlucky ] additional text to the roll message \
 example: John Doe → Chaos Roll [4 / 6] ⑤ (+10.9% Attack)
 
 ### commands
