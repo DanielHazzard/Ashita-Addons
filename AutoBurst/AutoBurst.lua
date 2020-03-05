@@ -4,8 +4,8 @@ _addon.version = "1.0 Ashita"
 _addon_description = ""
 _addon_commands = {"/autoburst", "/burst", "/ab"}
 require "common"
-require 'timer'
-require 'ffxi.recast'
+require "timer"
+require "ffxi.recast"
 
 -- CUSTOM VARIABLES
 EnableBursting = false
@@ -48,7 +48,7 @@ SkillchainID = {
 }
 
 -- Load CONFIGURATION file
-require('AutoBurst_config')
+require("AutoBurst_config")
 
 party = AshitaCore:GetDataManager():GetParty()
 player = AshitaCore:GetDataManager():GetPlayer()
@@ -94,7 +94,7 @@ function table.contains(table, element)
     return false
 end
 
-function SpellRecast(x)-- x = STRING NAME OF THE SPELL
+function SpellRecast(x) -- x = STRING NAME OF THE SPELL
     SpellData = AshitaCore:GetResourceManager():GetSpellByName(x, 0)
     DebugMessage("Current recast: " .. ashita.ffxi.recast.get_spell_recast_by_index(SpellData.Index))
     return ashita.ffxi.recast.get_spell_recast_by_index(SpellData.Index)
@@ -112,7 +112,9 @@ function HasSpell(x)
 end
 
 function HasAbility(x)
-    DebugMessage("Checking if you have the ability. " .. x .. " " .. AshitaCore:GetDataManager():GetPlayer():HasAbility(x))
+    DebugMessage(
+        "Checking if you have the ability. " .. x .. " " .. AshitaCore:GetDataManager():GetPlayer():HasAbility(x)
+    )
     return AshitaCore:GetDataManager():GetPlayer():HasAbility(x)
 end
 
@@ -168,11 +170,9 @@ function CanUseSpell(spell_name)
             else
                 return false
             end
-        elseif SpellData.LevelRequired[JobID] ~= -1 and
-            SpellData.LevelRequired[JobID] <= player:GetMainJobLevel() then
+        elseif SpellData.LevelRequired[JobID] ~= -1 and SpellData.LevelRequired[JobID] <= player:GetMainJobLevel() then
             return true
-        elseif SpellData.LevelRequired[JobID] ~= -1 and
-            SpellData.LevelRequired[JobID] <= player:GetSubJobLevel() then
+        elseif SpellData.LevelRequired[JobID] ~= -1 and SpellData.LevelRequired[JobID] <= player:GetSubJobLevel() then
             return true
         end
         return false
@@ -180,9 +180,13 @@ function CanUseSpell(spell_name)
     return false
 end
 
-function CanUseAbility(ability_name) return false end
+function CanUseAbility(ability_name)
+    return false
+end
 
-function ComparePartyID(partyIndex) return true end
+function ComparePartyID(partyIndex)
+    return true
+end
 
 function CheckIfBurstingAllowed()
     JobShorthand = JobIDs[player:GetMainJob()]
@@ -198,12 +202,15 @@ end
 
 function RunAssistCmd(prop)
     AssistedIndex = 0
-    if (string.lower(AssistedPlayer) ~= "" or string.lower(AssistedPlayer) == "none" or string.lower(AssistedPlayer) == "party") then
+    if
+        (string.lower(AssistedPlayer) ~= "" or string.lower(AssistedPlayer) == "none" or
+            string.lower(AssistedPlayer) == "party")
+     then
         DebugMessage("Specified target located.")
         -- ASSIST TARGET IS SET AS SOMETHING OTHER THAN BLANK, NONE OR PARTY SO GRAB THE ENTITY DATA
         for index = 0, 4096, 1 do
             if entity:GetName(index) == AssistedPlayer then
-                AshitaCore:GetChatManager():QueueCommand('/assist ' .. entity:GetName(index), 0);
+                AshitaCore:GetChatManager():QueueCommand("/assist " .. entity:GetName(index), 0)
                 DebugMessage("Located TARGET INDEX: " .. AssistedIndex)
                 break
             end
@@ -213,7 +220,7 @@ function RunAssistCmd(prop)
         for i = 0, 17 do
             AssistedIndex = AshitaCore:GetDataManager():GetParty():GetMemberTargetIndex(i)
             if entity:GetStatus(AssistedIndex) == 1 then
-                AshitaCore:GetChatManager():QueueCommand('/assist ' .. entity:GetName(AssistedIndex), 0);
+                AshitaCore:GetChatManager():QueueCommand("/assist " .. entity:GetName(AssistedIndex), 0)
                 DebugMessage("Located TARGET INDEX: " .. AssistedIndex)
                 break
             end
@@ -222,7 +229,7 @@ function RunAssistCmd(prop)
     if target:GetTargetName() == nil then
         DebugMessage("Specified target, or no party members engaged.")
     end
-    ashita.timer.once(2+ExtendedDelay, RunBurst_Part2, prop)
+    ashita.timer.once(2 + ExtendedDelay, RunBurst_Part2, prop)
 end
 
 function RunBurst(prop)
@@ -241,8 +248,13 @@ function RunBurst_Part2(prop)
         locatedTarget = target:GetTargetName()
         DebugMessage("Current Target: " .. locatedTarget)
         -- Darkness / Darkness / Umbra / Umbra / Compression / Compression / Gravitation / Gravitation
-        if (Chain == 'darkness' or Chain == 'umbra' or Chain == 'compression' or Chain == 'gravitation') and BuffActive(1) ~= true and table.contains(KnownMP_monsters, target:GetTargetName()) and party:GetPartyMemberMP(0) <= Aspir_MPAmount then
-            print('\31\200\31\05Low MP Notice: \31\200\31\207 Attempting to recover MP with Aspir.')
+        if
+            (Chain == "darkness" or Chain == "umbra" or Chain == "compression" or Chain == "gravitation") and
+                BuffActive(1) ~= true and
+                table.contains(KnownMP_monsters, target:GetTargetName()) and
+                party:GetPartyMemberMP(0) <= Aspir_MPAmount
+         then
+            print("\31\200\31\05Low MP Notice: \31\200\31\207 Attempting to recover MP with Aspir.")
             if CanUseSpell("Aspir III") and SpellRecast("Aspir III") == 0 then
                 completed_Spell = "Aspir III"
             elseif CanUseSpell("Aspir II") and SpellRecast("Aspir II") == 0 then
@@ -267,20 +279,31 @@ function RunBurst_Part2(prop)
             end
         end
         if completed_Spell ~= "" then
-            generatedString = "/ma \"" .. completed_Spell .. "\" <t>"
+            generatedString = '/ma "' .. completed_Spell .. '" <t>'
             DebugMessage("Attempting cast: (" .. generatedString .. ")")
-            ashita.timer.once(1+ExtendedDelay , QueueCmd, generatedString);
+            ashita.timer.once(1 + ExtendedDelay, QueueCmd, generatedString)
         end
     end
     return false
-
 end
 
 function QueueCmd(Command)
     AshitaCore:GetChatManager():QueueCommand(Command, 0)
 end
 
-function IsPetPartyMember(index) return false end
+function IsPetPartyMember(index)
+    for i = 0, 16 do
+        if party:GetMemberName(i) ~= nil then
+            indx2 = party:GetMemberTargetIndex(i)
+            if entity:GetPetTargetIndex(indx2) ~= nil then
+                if entity:GetServerId(entity:GetPetTargetIndex(indx2)) == index then
+                    return true
+                end
+            end
+        end
+    end
+    return false
+end
 
 function IsPartyMember(index)
     for i = 0, 16 do
@@ -298,47 +321,62 @@ function RunPacketAction(id, size, data)
     elseif (id == 0xA and zoning_bool) then
         DebugMessage("No longer zoning.")
         zoning_bool = false
-    end 
+    end
     if not zoning_bool and id == 0x28 then
         actor = struct.unpack("I", data, 6)
         category = ashita.bits.unpack_be(data, 82, 4)
         if category == 3 and IsPartyMember(actor) then -- WEAPONSKILL
             prop = SkillchainID[ashita.bits.unpack_be(data, 299, 10)]
-            if prop then RunBurst(prop) end
-        elseif category == 4 and IsPartyMember(actor) then -- SPELL TARGET 1, ACTION 1, ADDED EFFECT MESSAGE ( PACKET 150+32+44 ) LOOKING FOR 291
-            AddedEffect = ashita.bits.unpack_be(data, 271, 1)-- EITHER: 0 = FALSE, 1 = TRUE
-            if AddedEffect == 1 then
-                prop = ashita.bits.unpack_be(data, 299, 10)
-                if SkillchainID[prop] then RunBurst(prop) end
+            if prop then
+                RunBurst(prop)
             end
-        elseif category == 12 and IsPetPartyMember(actor) then -- PET
-            AddedEffect = ashita.bits.unpack_be(data, 271, 1)-- EITHER: 0 = FALSE, 1 = TRUE
+        elseif category == 4 and IsPartyMember(actor) then -- SPELL TARGET 1, ACTION 1, ADDED EFFECT MESSAGE ( PACKET 150+32+44 ) LOOKING FOR 291
+            AddedEffect = ashita.bits.unpack_be(data, 271, 1)
+            -- EITHER: 0 = FALSE, 1 = TRUE
             if AddedEffect == 1 then
                 prop = ashita.bits.unpack_be(data, 299, 10)
-                if SkillchainID[prop] then RunBurst(prop) end
+                if SkillchainID[prop] then
+                    RunBurst(prop)
+                end
+            end
+        elseif (category == 13 or category == 11) and IsPetPartyMember(actor) then -- PET
+            AddedEffect = ashita.bits.unpack_be(data, 271, 1)
+            -- EITHER: 0 = FALSE, 1 = TRUE
+            if AddedEffect == 1 then
+                prop = ashita.bits.unpack_be(data, 299, 10)
+                if SkillchainID[prop] then
+                    RunBurst(prop)
+                end
             end
         end
     end
 end
 
-function EntityName(target_id) end
+function EntityName(target_id)
+end
 
-ashita.register_event("incoming_packet", function(id, size, data)
-    RunPacketAction(id, size, data)
-    return false
-end)
-
-ashita.register_event('command', function(cmd, nType)
-    local args = cmd:args();
-    DebugMessage("Located command: " .. cmd)
-    if not table.contains(_addon_commands, args[1]) then
+ashita.register_event(
+    "incoming_packet",
+    function(id, size, data)
+        RunPacketAction(id, size, data)
         return false
-    end    
-    if (#args == 1 or args[2] == 'reload') then
-        AshitaCore:GetChatManager():QueueCommand('/addon reload AutoBurst', 0);
+    end
+)
+
+ashita.register_event(
+    "command",
+    function(cmd, nType)
+        local args = cmd:args()
+        DebugMessage("Located command: " .. cmd)
+        if not table.contains(_addon_commands, args[1]) then
+            return false
         end
-    return false
-end)
+        if (#args == 1 or args[2] == "reload") then
+            AshitaCore:GetChatManager():QueueCommand("/addon reload AutoBurst", 0)
+        end
+        return false
+    end
+)
 
 function DebugMessage(message)
     if DebugMode then
@@ -346,7 +384,9 @@ function DebugMessage(message)
     end
 end
 
-ashita.register_event('mpmax_change', function(old, new)
+ashita.register_event(
+    "mpmax_change",
+    function(old, new)
         if Aspir_NoBurst == true and party:GetPartyMemberMP(0) <= Aspir_MPAmount and BuffActive(1) ~= true then
             RunAssistCmd()
             -- CANCEL THE RUN BURST ID SKILLCHAIN IS SOMEHOW EMPTY
@@ -359,10 +399,11 @@ ashita.register_event('mpmax_change', function(old, new)
                     completed_Spell = "Aspir"
                 end
                 if completed_Spell ~= "" then
-                    generatedString = "/ma \"" .. completed_Spell .. "\" <t>"
+                    generatedString = '/ma "' .. completed_Spell .. '" <t>'
                     DebugMessage("Attempting cast: (" .. generatedString .. ")")
-                    ashita.timer.once(1+ExtendedDelay, QueueCmd, generatedString);
+                    ashita.timer.once(1 + ExtendedDelay, QueueCmd, generatedString)
                 end
             end
         end
-end);
+    end
+)
