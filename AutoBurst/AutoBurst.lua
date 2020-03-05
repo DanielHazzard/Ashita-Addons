@@ -1,6 +1,6 @@
 _addon.name = "AutoBurst"
 _addon.author = "Daniel_H"
-_addon.version = "1.0 Ashita"
+_addon.version = "1.1 Ashita"
 _addon_description = ""
 _addon_commands = {"/autoburst", "/burst", "/ab"}
 require "common"
