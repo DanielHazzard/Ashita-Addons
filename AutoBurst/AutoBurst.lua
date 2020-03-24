@@ -199,57 +199,24 @@ function CheckIfBurstingAllowed()
   return false
 end
 
-function AssistPlayer(player_name)
-  QueueCmd("/assist " .. player_name)
-
-  ashita.timer.once(2 + ExtendedDelay, RunBurst_Part2, prop)
+function RunAssistCmd(prop, TargetID)
+  DebugMessage("Setting target: " .. TargetID)
+  AshitaCore:GetChatManager():QueueCommand("/target " .. TargetID, 0)
+  ashita.timer.once(2 + ExtendedDelay, RunBurst_Part2, prop, TargetID)
 end
 
-function RunAssistCmd(prop)
-  Assisted_Name = "" -- SET NAME TO BLANK FIRST TO BLOCK ANY POSSIBLE CROSS OVER
-  AssistName = string.lower(AssistedPlayer)
-
-  if AssistName ~= "" and AssistName ~= "none" and AssistName ~= "party" then
-    DebugMessage("Specified target is set: " .. AssistedPlayer .. ", attempting /assist.")
-
-    -- ASSIST TARGET IS SET AS SOMETHING OTHER THAN BLANK, NONE OR PARTY SO GRAB THE ENTITY DATA
-    for index = 0, 4096, 1 do
-      if entity:GetName(index) == AssistedPlayer then
-        Assisted_Name = entity:GetName(index)
-        DebugMessage("Located target: " .. entity:GetName(index))
-        break
-      end
-    end
-  else
-    DebugMessage("Specified target is not set running party check.")
-    for i = 0, 17 do
-      AssistedIndex = AshitaCore:GetDataManager():GetParty():GetMemberTargetIndex(i)
-      if entity:GetStatus(AssistedIndex) == 1 then
-        Assisted_Name = entity:GetName(index)
-        DebugMessage("Located target: " .. entity:GetName(index))
-        break
-      end
-    end
-  end
-
-  if Assisted_Name ~= "" then
-    AssistPlayer(Assisted_Name)
-  end
-end
-
-function RunBurst(prop)
+function RunBurst(prop, TargetID)
   DebugMessage("Skillchain located: " .. SkillchainID[prop])
   if CheckIfBurstingAllowed() == true and not isCasting == true then -- IF PLAYER IS ONE OF THE CORRECT JOBS THEN ENABLE BURSTING.
     DebugMessage("Burst possible.")
-    -- ASSIST THE SPECIFIED TARGET OR SEARCH THE PARTY TO GRAB THE TARGET
-    RunAssistCmd(prop)
+    RunAssistCmd(prop, TargetID)
   end
 end
 
-function RunBurst_Part2(prop)
+function RunBurst_Part2(prop, TargetID)
   Chain = SkillchainID[prop]
   completed_Spell = ""
-  if target:GetTargetName() ~= nil then
+  if target:GetTargetName() ~= nil and target:GetTargetHealthPercent() >= 1 then
     locatedTarget = target:GetTargetName()
     DebugMessage("Current Target: " .. locatedTarget)
     -- Darkness / Darkness / Umbra / Umbra / Compression / Compression / Gravitation / Gravitation
@@ -333,7 +300,8 @@ function RunPacketAction(id, size, data)
     if category == 3 and IsPartyMember(actor) then -- WEAPONSKILL
       prop = SkillchainID[ashita.bits.unpack_be(data, 299, 10)]
       if prop then
-        RunBurst(prop)
+        TargetID = ashita.bits.unpack_be(data, 150, 32)
+        RunBurst(prop, TargetID)
       end
     elseif category == 4 and IsPartyMember(actor) then -- SPELL TARGET 1, ACTION 1, ADDED EFFECT MESSAGE ( PACKET 150+32+44 ) LOOKING FOR 291
       AddedEffect = ashita.bits.unpack_be(data, 271, 1)
@@ -341,7 +309,8 @@ function RunPacketAction(id, size, data)
       if AddedEffect == 1 then
         prop = ashita.bits.unpack_be(data, 299, 10)
         if SkillchainID[prop] then
-          RunBurst(prop)
+          TargetID = ashita.bits.unpack_be(data, 150, 32)
+          RunBurst(prop, TargetID)
         end
       end
     elseif (category == 13 or category == 11) and IsPetPartyMember(actor) then -- PET
@@ -350,7 +319,8 @@ function RunPacketAction(id, size, data)
       if AddedEffect == 1 then
         prop = ashita.bits.unpack_be(data, 299, 10)
         if SkillchainID[prop] then
-          RunBurst(prop)
+          TargetID = ashita.bits.unpack_be(data, 150, 32)
+          RunBurst(prop, TargetID)
         end
       end
     end
