@@ -4,6 +4,9 @@
 ---
 
 #### UPDATES AND MODIFICATIONS
+##### version 1.2
+Changed targeting to use the PACKET TARGET id.
+
 ##### version 1.1
 Added PET recognition.
 
