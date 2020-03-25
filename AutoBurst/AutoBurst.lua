@@ -1,13 +1,13 @@
 _addon.name = "AutoBurst"
 _addon.author = "Daniel_H"
-_addon.version = "1.2 Ashita"
+_addon.version = "1.3 Ashita"
 _addon_description = ""
+
 require "common"
 require "timer"
 require "ffxi.recast"
 
 -- CUSTOM VARIABLES
-EnableBursting = false
 isCasting = false
 zoning_bool = false
 
@@ -54,8 +54,8 @@ player = AshitaCore:GetDataManager():GetPlayer()
 activeBuffs = AshitaCore:GetDataManager():GetPlayer():GetBuffs()
 entity = AshitaCore:GetDataManager():GetEntity()
 target = AshitaCore:GetDataManager():GetTarget()
-
-resource = AshitaCore:GetResourceManager()
+resources = AshitaCore:GetResourceManager()
+items = AshitaCore:GetDataManager():GetInventory()
 
 JobIDs = {
   [0] = "NON",
@@ -94,27 +94,15 @@ function table.contains(table, element)
 end
 
 function SpellRecast(x) -- x = STRING NAME OF THE SPELL
-  SpellData = AshitaCore:GetResourceManager():GetSpellByName(x, 0)
+  SpellData = resources:GetSpellByName(x, 0)
   DebugMessage("Current recast: " .. ashita.ffxi.recast.get_spell_recast_by_index(SpellData.Index))
   return ashita.ffxi.recast.get_spell_recast_by_index(SpellData.Index)
 end
 
 function AbilityRecasts(x)
-  AbilityData = AshitaCore:GetResourceManager():GetAbilityByName(x, 0)
+  AbilityData = resources:GetAbilityByName(x, 0)
   DebugMessage("Current ability recast: " .. AbilityData.RecastDelay)
   return AbilityData.RecastDelay
-end
-
-function HasSpell(x)
-  DebugMessage("Checking if you have the spell. " .. x .. " " .. AshitaCore:GetDataManager():GetPlayer():HasSpell(x))
-  return AshitaCore:GetDataManager():GetPlayer():HasSpell(x)
-end
-
-function HasAbility(x)
-  DebugMessage(
-  "Checking if you have the ability. " .. x .. " " .. AshitaCore:GetDataManager():GetPlayer():HasAbility(x)
-  )
-  return AshitaCore:GetDataManager():GetPlayer():HasAbility(x)
 end
 
 function BuffActive(BuffID)
@@ -153,38 +141,49 @@ function CheckIfPlayerDisabled()
 end
 
 function CanUseSpell(spell_name)
-  SpellData = AshitaCore:GetResourceManager():GetSpellByName(spell_name, 0)
+  SpellData = resources:GetSpellByName(spell_name, 0)
   JobID = player:GetMainJob()
   DebugMessage("Checking data on the spell: " .. spell_name)
   ThreeLetterJob = JobIDs[JobID]
-  if SpellData.LevelRequired[JobID] ~= nil then
-    DebugMessage("Level required: " .. SpellData.LevelRequired[JobID])
-    if (SpellData.LevelRequired[JobID] ~= -1) and (SpellData.LevelRequired[JobID] >= 100) then
-      if SpellData.LevelRequired[JobID] == 100 and JobPoints_SPENT[ThreeLetterJob] >= 100 then
+  if party:GetMemberCurrentMP(0) <= SpellData.ManaCost then
+    DebugMessage("MP check has passed for the spell, " .. spell_name)
+    if SpellData.LevelRequired[JobID] ~= nil then
+      DebugMessage("Level required for the JOB: " .. ThreeLetterJob .. " " .. spell_name .. " " .. SpellData.LevelRequired[JobID])
+      if (SpellData.LevelRequired[JobID] ~= -1) and (SpellData.LevelRequired[JobID] >= 100) then
+        DebugMessage("Job Point spell check, " .. spell_name)
+        if SpellData.LevelRequired[JobID] == 100 and JobPoints_SPENT[ThreeLetterJob] >= 100 then
+          DebugMessage("Job Point spell check, PASSED " .. spell_name)
+          return true
+        elseif SpellData.LevelRequired[JobID] == 550 and JobPoints_SPENT[ThreeLetterJob] >= 550 then
+          DebugMessage("Job Point spell check, PASSED " .. spell_name)
+          return true
+        elseif SpellData.LevelRequired[JobID] == 1200 and JobPoints_SPENT[ThreeLetterJob] >= 1200 then
+          DebugMessage("Job Point spell check, PASSED " .. spell_name)
+          return true
+        else
+          DebugMessage("Job Point spell check, FAILED " .. spell_name)
+          return false
+        end
+      elseif SpellData.LevelRequired[JobID] ~= -1 and SpellData.LevelRequired[JobID] <= player:GetMainJobLevel() then
+        DebugMessage("MAIN JOB check passed, " .. spell_name)
         return true
-      elseif SpellData.LevelRequired[JobID] == 550 and JobPoints_SPENT[ThreeLetterJob] >= 550 then
+      elseif SpellData.LevelRequired[JobID] ~= -1 and SpellData.LevelRequired[JobID] <= player:GetSubJobLevel() then
+        DebugMessage("SUB JOB check passed, " .. spell_name)
         return true
-      elseif SpellData.LevelRequired[JobID] == 1200 and JobPoints_SPENT[ThreeLetterJob] >= 1200 then
-        return true
-      else
-        return false
       end
-    elseif SpellData.LevelRequired[JobID] ~= -1 and SpellData.LevelRequired[JobID] <= player:GetMainJobLevel() then
-      return true
-    elseif SpellData.LevelRequired[JobID] ~= -1 and SpellData.LevelRequired[JobID] <= player:GetSubJobLevel() then
-      return true
+      DebugMessage("Spell check #1, FAILED " .. spell_name)
+      return false
     end
+    DebugMessage("Spell check #2, FAILED " .. spell_name)
+    return false
+  else
+    DebugMessage("MP check has failed for the spell, " .. spell_name)
     return false
   end
-  return false
 end
 
 function CanUseAbility(ability_name)
   return false
-end
-
-function ComparePartyID(partyIndex)
-  return true
 end
 
 function CheckIfBurstingAllowed()
@@ -193,10 +192,21 @@ function CheckIfBurstingAllowed()
     if CheckIfPlayerDisabled() == false then
       return true
     else
+      DebugMessage("Burst control is blocked due to a status ailment.")
       return false
     end
   end
   return false
+end
+
+function ItemCheck(items_ID)
+ for ind = 1,items:GetContainerMax(0) do
+        local item = items:GetItem(0, ind);
+        if (item ~= nil and item.Id == items_ID and item.Count > 0) then
+            return true
+        end
+    end
+    return false
 end
 
 function RunAssistCmd(prop, TargetID)
@@ -220,12 +230,7 @@ function RunBurst_Part2(prop, TargetID)
     locatedTarget = target:GetTargetName()
     DebugMessage("Current Target: " .. locatedTarget)
     -- Darkness / Darkness / Umbra / Umbra / Compression / Compression / Gravitation / Gravitation
-    if
-    (Chain == "darkness" or Chain == "umbra" or Chain == "compression" or Chain == "gravitation") and
-    BuffActive(1) ~= true and
-    table.contains(KnownMP_monsters, target:GetTargetName()) and
-    party:GetPartyMemberMP(0) <= Aspir_MPAmount
-    then
+    if Chain == "darkness" or Chain == "umbra" or Chain == "compression" or Chain == "gravitation" and BuffActive(1) ~= true and table.contains(KnownMP_monsters, target:GetTargetName()) and party:GetPartyMemberMP(0) <= Aspir_MPAmount then
       print("\31\200\31\05Low MP Notice: \31\200\31\207 Attempting to recover MP with Aspir.")
       if CanUseSpell("Aspir III") and SpellRecast("Aspir III") == 0 then
         completed_Spell = "Aspir III"
@@ -331,11 +336,11 @@ function EntityName(target_id)
 end
 
 ashita.register_event(
-"incoming_packet",
-function(id, size, data)
-  RunPacketAction(id, size, data)
-  return false
-end
+  "incoming_packet",
+  function(id, size, data)
+    RunPacketAction(id, size, data)
+    return false
+  end
 )
 
 function DebugMessage(message)
@@ -345,25 +350,44 @@ function DebugMessage(message)
 end
 
 ashita.register_event(
-"mpmax_change",
-function(old, new)
-  if Aspir_NoBurst == true and party:GetPartyMemberMP(0) <= Aspir_MPAmount and BuffActive(1) ~= true then
-    RunAssistCmd()
-    -- CANCEL THE RUN BURST ID SKILLCHAIN IS SOMEHOW EMPTY
-    if target:GetTargetName() ~= nil and table.contains(KnownMP_monsters, target:GetTargetName()) then
-      if CanUseSpell("Aspir III") and SpellRecast("Aspir III") == true then
-        completed_Spell = "Aspir III"
-      elseif CanUseSpell("Aspir II") and SpellRecast("Aspir II") == true then
-        completed_Spell = "Aspir II"
-      elseif CanUseSpell("Aspir") and SpellRecast("Aspir") == true then
-        completed_Spell = "Aspir"
-      end
-      if completed_Spell ~= "" then
-        generatedString = '/ma "' .. completed_Spell .. '" <t>'
-        DebugMessage("Attempting cast: (" .. generatedString .. ")")
-        ashita.timer.once(2 + ExtendedDelay, QueueCmd, generatedString)
+  "mpmax_change",
+  function(old, new)
+    if Aspir_NoBurst == true and party:GetPartyMemberMP(0) <= Aspir_MPAmount and BuffActive(1) ~= true then
+      RunAssistCmd()
+      -- CANCEL THE RUN BURST ID SKILLCHAIN IS SOMEHOW EMPTY
+      if target:GetTargetName() ~= nil and table.contains(KnownMP_monsters, target:GetTargetName()) then
+        if CanUseSpell("Aspir III") and SpellRecast("Aspir III") == true then
+          completed_Spell = "Aspir III"
+        elseif CanUseSpell("Aspir II") and SpellRecast("Aspir II") == true then
+          completed_Spell = "Aspir II"
+        elseif CanUseSpell("Aspir") and SpellRecast("Aspir") == true then
+          completed_Spell = "Aspir"
+        end
+        if completed_Spell ~= "" then
+          generatedString = '/ma "' .. completed_Spell .. '" <t>'
+          DebugMessage("Attempting cast: (" .. generatedString .. ")")
+          ashita.timer.once(2 + ExtendedDelay, QueueCmd, generatedString)
+        end
       end
     end
   end
-end
+)
+
+ashita.register_event(
+  "gain_buff",
+  function(buff_ID)
+    if BuffActive(6) and AttemptSilenceRemoval == true then
+      if UseEchoDrops == true and ItemCheck(4151) > 0 then
+        QueueCmd('/item "Echo Drops" <me>')
+      elseif UseCatholicon == true and ItemCheck(4206) > 0 then
+        QueueCmd('/item "Catholicon" <me>')
+      elseif UseVicarsDrink == true and ItemCheck(5439) > 0 then
+        QueueCmd('/item "Vicar\'s Drink" <me>')
+      elseif UseRemedyOintment == true and ItemCheck(5326) > 0 then
+        QueueCmd('/item "Remedy Ointment" <me>')
+      elseif UseRemedy == true and ItemCheck(4155) > 0 then
+        QueueCmd('/item "Remedy" <me>')
+      end
+    end
+  end
 )
