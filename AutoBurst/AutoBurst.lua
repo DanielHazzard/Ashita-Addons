@@ -1,6 +1,6 @@
 _addon.name = "AutoBurst"
 _addon.author = "Daniel_H"
-_addon.version = "1.3 Ashita"
+_addon.version = "1.2 Ashita"
 _addon_description = ""
 
 require "common"
@@ -143,9 +143,9 @@ end
 function CanUseSpell(spell_name)
   SpellData = resources:GetSpellByName(spell_name, 0)
   JobID = player:GetMainJob()
-  DebugMessage("Checking data on the spell: " .. spell_name)
+  DebugMessage("Checking data on the spell: " .. spell_name .. " Current MP: " .. party:GetMemberCurrentMP(0))
   ThreeLetterJob = JobIDs[JobID]
-  if party:GetMemberCurrentMP(0) <= SpellData.ManaCost then
+  if party:GetMemberCurrentMP(0) > SpellData.ManaCost then
     DebugMessage("MP check has passed for the spell, " .. spell_name)
     if SpellData.LevelRequired[JobID] ~= nil then
       DebugMessage("Level required for the JOB: " .. ThreeLetterJob .. " " .. spell_name .. " " .. SpellData.LevelRequired[JobID])
