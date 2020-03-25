@@ -148,10 +148,7 @@ function CanUseSpell(spell_name)
     if party:GetMemberCurrentMP(0) > SpellData.ManaCost then
         DebugMessage("MP check has passed for the spell, " .. spell_name)
         if SpellData.LevelRequired[JobID] ~= nil then
-            DebugMessage(
-                "Level required for the JOB: " ..
-                    ThreeLetterJob .. " " .. spell_name .. " " .. SpellData.LevelRequired[JobID]
-            )
+            DebugMessage("Level required for the JOB: " .. ThreeLetterJob .. " " .. spell_name .. " " .. SpellData.LevelRequired[JobID])
             if (SpellData.LevelRequired[JobID] ~= -1) and (SpellData.LevelRequired[JobID] >= 100) then
                 DebugMessage("Job Point spell check, " .. spell_name)
                 if SpellData.LevelRequired[JobID] == 100 and JobPoints_SPENT[ThreeLetterJob] >= 100 then
@@ -203,8 +200,8 @@ function CheckIfBurstingAllowed()
 end
 
 function ItemCheck(items_ID)
-    for ind = 1, items:GetContainerMax(0) do
-        local item = items:GetItem(0, ind)
+    for ind = 1,items:GetContainerMax(0) do
+        local item = items:GetItem(0, ind);
         if (item ~= nil and item.Id == items_ID and item.Count > 0) then
             return true
         end
@@ -233,12 +230,7 @@ function RunBurst_Part2(prop, TargetID)
         locatedTarget = target:GetTargetName()
         DebugMessage("Current Target: " .. locatedTarget)
         -- Darkness / Darkness / Umbra / Umbra / Compression / Compression / Gravitation / Gravitation
-        if
-            Chain == "darkness" or Chain == "umbra" or Chain == "compression" or
-                Chain == "gravitation" and BuffActive(1) ~= true and
-                    table.contains(KnownMP_monsters, target:GetTargetName()) and
-                    party:GetPartyMemberMP(0) <= Aspir_MPAmount
-         then
+        if Chain == "darkness" or Chain == "umbra" or Chain == "compression" or Chain == "gravitation" and BuffActive(1) ~= true and table.contains(KnownMP_monsters, target:GetTargetName()) and party:GetPartyMemberMP(0) <= Aspir_MPAmount then
             print("\31\200\31\05Low MP Notice: \31\200\31\207 Attempting to recover MP with Aspir.")
             if CanUseSpell("Aspir III") and SpellRecast("Aspir III") == 0 then
                 completed_Spell = "Aspir III"
@@ -343,9 +335,7 @@ end
 function EntityName(target_id)
 end
 
-ashita.register_event(
-    "incoming_packet",
-    function(id, size, data)
+ashita.register_event("incoming_packet", function(id, size, data)
         RunPacketAction(id, size, data)
         return false
     end
@@ -357,9 +347,7 @@ function DebugMessage(message)
     end
 end
 
-ashita.register_event(
-    "mpmax_change",
-    function(old, new)
+ashita.register_event("mpmax_change", function(old, new)
         if Aspir_NoBurst == true and party:GetPartyMemberMP(0) <= Aspir_MPAmount and BuffActive(1) ~= true then
             RunAssistCmd()
             -- CANCEL THE RUN BURST ID SKILLCHAIN IS SOMEHOW EMPTY
@@ -381,9 +369,7 @@ ashita.register_event(
     end
 )
 
-ashita.register_event(
-    "gain_buff",
-    function(buff_ID)
+ashita.register_event("gain_buff", function(buff_ID)
         if BuffActive(6) and AttemptSilenceRemoval == true then
             if UseEchoDrops == true and ItemCheck(4151) > 0 then
                 QueueCmd('/item "Echo Drops" <me>')
