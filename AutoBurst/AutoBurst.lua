@@ -315,7 +315,7 @@ function RunPacketAction(id, size, data)
       AddedEffect = ashita.bits.unpack_be(data, 271, 1)
       if AddedEffect == 1 then
         prop = ashita.bits.unpack_be(data, 299, 10)
-        DebugMessage("A prop was located, " .. prop)
+        DebugMessage("A prop was located, " .. prop .. " : " .. SkillchainID[prop])
         TargetID = ashita.bits.unpack_be(data, 150, 32)
         RunBurst(prop, TargetID)
       end
@@ -324,7 +324,7 @@ function RunPacketAction(id, size, data)
       -- EITHER: 0 = FALSE, 1 = TRUE
       if AddedEffect == 1 then
         prop = ashita.bits.unpack_be(data, 299, 10)
-        DebugMessage("A prop was located, " .. prop)
+        DebugMessage("A prop was located, " .. prop .. " : " .. SkillchainID[prop])
         TargetID = ashita.bits.unpack_be(data, 150, 32)
         RunBurst(prop, TargetID)
       end
@@ -333,7 +333,7 @@ function RunPacketAction(id, size, data)
       -- EITHER: 0 = FALSE, 1 = TRUE
       if AddedEffect == 1 then
         prop = ashita.bits.unpack_be(data, 299, 10)
-        DebugMessage("A prop was located, " .. prop)
+        DebugMessage("A prop was located, " .. prop .. " : " .. SkillchainID[prop])
         TargetID = ashita.bits.unpack_be(data, 150, 32)
         RunBurst(prop, TargetID)
       end
