@@ -299,7 +299,6 @@ function IsPetPartyMember(index)
 end
 
 function IsPartyMember(index)
-  DebugMessage(index)
   for i = 0, 16 do
     if party:GetMemberName(i) ~= nil and party:GetMemberServerId(i) == index then
       return true
