@@ -314,7 +314,7 @@ function RunPacketAction(id, size, data)
   if not zoning_bool and id == 0x28 then
     actor = struct.unpack("I", data, 6)
     category = ashita.bits.unpack_be(data, 82, 4)
-    if category == 3 or category == 11 then -- WEAPONSKILL
+    if (category == 3 or category == 11) and IsPartyMember(actor) then -- WEAPONSKILL
       DebugMessage("Weaponskill located. ")
       AddedEffect = ashita.bits.unpack_be(data, 271, 1)
       if AddedEffect == 1 then
