@@ -94,12 +94,6 @@ end
 
 DebugMessage("Debug mode enabled.")
 
-  for i = 0, 16 do
-    if party:GetMemberName(i) ~= nil and party:GetMemberServerId(i) ~= 0 then
-      DebugMessage(party:GetMemberServerId(i) .. " " .. party:GetMemberName(i))
-    end
-  end
-
 function table.contains(table, element)
   for _, value in pairs(table) do
     if value == element then
