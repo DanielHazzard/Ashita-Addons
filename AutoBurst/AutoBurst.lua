@@ -84,6 +84,8 @@ JobIDs = {
   [23] = "MON"
 }
 
+
+
 function DebugMessage(message)
   if DebugMode then
     print("\31\200[\31\05AutoBurst\31\200]\31\207 " .. message)
@@ -91,6 +93,12 @@ function DebugMessage(message)
 end
 
 DebugMessage("Debug mode enabled.")
+
+  for i = 0, 16 do
+    if party:GetMemberName(i) ~= nil and party:GetMemberServerId(i) ~= 0 then
+      DebugMessage(party:GetMemberServerId(i) .. " " .. party:GetMemberName(i))
+    end
+  end
 
 function table.contains(table, element)
   for _, value in pairs(table) do
@@ -291,6 +299,7 @@ function IsPetPartyMember(index)
 end
 
 function IsPartyMember(index)
+  DebugMessage(index)
   for i = 0, 16 do
     if party:GetMemberName(i) ~= nil and party:GetMemberServerId(i) == index then
       return true
@@ -298,6 +307,8 @@ function IsPartyMember(index)
   end
   return false
 end
+
+-- and IsPartyMember(actor)
 
 function RunPacketAction(id, size, data)
   if (id == 0xB) then
@@ -310,8 +321,8 @@ function RunPacketAction(id, size, data)
   if not zoning_bool and id == 0x28 then
     actor = struct.unpack("I", data, 6)
     category = ashita.bits.unpack_be(data, 82, 4)
-    if category == 3 and IsPartyMember(actor) then -- WEAPONSKILL
-      DebugMessage("Weaponskill located.")
+    if category == 3 or category == 11 then -- WEAPONSKILL
+      DebugMessage("Weaponskill located. ")
       AddedEffect = ashita.bits.unpack_be(data, 271, 1)
       if AddedEffect == 1 then
         prop = ashita.bits.unpack_be(data, 299, 10)
