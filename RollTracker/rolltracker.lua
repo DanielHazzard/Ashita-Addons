@@ -20,7 +20,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 _addon.author = 'Daniel_H';
 _addon.name = 'rolltracker';
-_addon.version = '1.0.2';
+_addon.version = '1.0.3';
 
 last_roll = ""
 
