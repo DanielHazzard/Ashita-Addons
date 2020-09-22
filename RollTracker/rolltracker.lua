@@ -315,6 +315,13 @@ local corsairRoll_Data = {
     },
 }
 
+function printTable(tableRec)
+for k , v in pairs(_G) do
+
+  print('\31\200[\31\05Roll Tracker\31\200]\31\190 ' .. tostring(k).." ||||| "..tostring(v))
+  end
+end
+
 function GetEquipped(slot)
     local inventory = AshitaCore:GetDataManager():GetInventory();
     local equipment = inventory:GetEquippedItem(slot);
@@ -423,12 +430,22 @@ function generate_corsair_print(Number, ID, PTMembers, effected_Members)
         ring1 = GetEquipped(13)
         ring2 = GetEquipped(14)
         neck = GetEquipped(9)
+        main = GetEquipped(1)
         if Number < 12 then
             EffectBonus = rollDataTable['effect']
             
             if EffectBonus ~= "Unknown" and rollName ~= "Companion's Roll" then
-                if neck == 26038 then -- 7
+                if main == 21581 then -- ROSTAM (+8)
+                    mathedEffect = EffectBonus * 8
+                    bonus = bonus + mathedEffect
+                elseif main == 21580 then -- LANUN KNIFE (+7)
                     mathedEffect = EffectBonus * 7
+                    bonus = bonus + mathedEffect
+                elseif neck == 26038 then -- 7
+                    mathedEffect = EffectBonus * 7
+                    bonus = bonus + mathedEffect
+                elseif main == 21579 then -- COMM. KNIFE (+6)
+                    mathedEffect = EffectBonus * 6
                     bonus = bonus + mathedEffect
                 elseif ring1 == 28548 or ring2 == 28548 then -- 5
                     mathedEffect = EffectBonus * 5
@@ -453,8 +470,17 @@ function generate_corsair_print(Number, ID, PTMembers, effected_Members)
                     for number in string.gmatch(bonus, '([^,]+)') do
                         if i == 0 then
                             Companion_1 = number
+                             if main == 21581 then -- ROSTAM (+8)
+                                mathedEffect = Effect_2 * 8
+                                Companion_1 = Companion_1 + mathedEffect
+                            elseif main == 21580 then -- LANUN KNIFE (+7)
+                                mathedEffect = Effect_2 * 7
+                                Companion_1 = Companion_1 + mathedEffect
                             if neck == 26038 then -- 7
-                                mathedEffect = Effect_1 * 7
+                                mathedEffect = Effect_2 * 7
+                                Companion_1 = Companion_1 + mathedEffect
+                            elseif main == 21579 then -- COMM. KNIFE (+6)
+                                mathedEffect = EffectBonus * 6
                                 Companion_1 = Companion_1 + mathedEffect
                             elseif ring1 == 28548 or ring2 == 28548 then -- 5
                                 mathedEffect = Effect_1 * 5
@@ -465,8 +491,17 @@ function generate_corsair_print(Number, ID, PTMembers, effected_Members)
                             end
                         elseif i == 1 then
                             Companion_2 = number
+                            if main == 21581 then -- ROSTAM (+8)
+                                mathedEffect = Effect_2 * 8
+                                Companion_2 = Companion_2 + mathedEffect
+                            elseif main == 21580 then -- LANUN KNIFE (+7)
+                                mathedEffect = Effect_2 * 7
+                                Companion_2 = Companion_2 + mathedEffect
                             if neck == 26038 then -- 7
                                 mathedEffect = Effect_2 * 7
+                                Companion_2 = Companion_2 + mathedEffect
+                            elseif main == 21579 then -- COMM. KNIFE (+6)
+                                mathedEffect = EffectBonus * 6
                                 Companion_2 = Companion_2 + mathedEffect
                             elseif ring1 == 28548 or ring2 == 28548 then -- 5
                                 mathedEffect = Effect_2 * 5
@@ -505,8 +540,6 @@ function generate_corsair_print(Number, ID, PTMembers, effected_Members)
         last_roll = messagetoshow
     end
 end
-
-
 
 ashita.register_event('incoming_packet', function(id, size, data)
     local party = AshitaCore:GetDataManager():GetParty()
