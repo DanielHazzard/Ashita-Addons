@@ -20,7 +20,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 _addon.author = 'Daniel_H';
 _addon.name = 'rolltracker';
-_addon.version = '1.0.3';
+_addon.version = '1.0.2';
 
 last_roll = ""
 
@@ -317,8 +317,7 @@ local corsairRoll_Data = {
 
 function printTable(tableRec)
 for k , v in pairs(_G) do
-
-  print('\31\200[\31\05Roll Tracker\31\200]\31\190 ' .. tostring(k).." ||||| "..tostring(v))
+    print('\31\200[\31\05Roll Tracker\31\200]\31\190 ' .. tostring(k).." ||||| "..tostring(v))
   end
 end
 
@@ -409,8 +408,6 @@ function generate_corsair_print(Number, ID, PTMembers, effected_Members)
             messagetoshow = '[' .. effected_Members .. '] ' .. effectTargets .. string.char(0x81, 0xC3) .. ' ' .. rollName .. ' ' .. circledNumber .. ' '
         end
         
-        
-        
         if Number > 11 then
             messagetoshow = messagetoshow .. '\31\039(Bust!) '
         elseif Number == rollDataTable['lucky'] or Number == 11 then
@@ -420,6 +417,7 @@ function generate_corsair_print(Number, ID, PTMembers, effected_Members)
         else
             messagetoshow = messagetoshow .. '\31\205'
         end
+
         if Number > 11 then
             messagetoshow = messagetoshow .. '(-'
             bonus = rollDataTable['bust']
@@ -427,10 +425,12 @@ function generate_corsair_print(Number, ID, PTMembers, effected_Members)
             messagetoshow = messagetoshow .. '(+'
             bonus = rollDataTable['rolls'][Number]
         end
+
         ring1 = GetEquipped(13)
         ring2 = GetEquipped(14)
         neck = GetEquipped(9)
         main = GetEquipped(1)
+
         if Number < 12 then
             EffectBonus = rollDataTable['effect']
             
@@ -454,70 +454,71 @@ function generate_corsair_print(Number, ID, PTMembers, effected_Members)
                     mathedEffect = EffectBonus * 3
                     bonus = bonus + mathedEffect
                 end
-            else if rollName == "Companion's Roll" then
-                    
-                    i = 0
-                    for number in string.gmatch(rollDataTable['effect'], '([^,]+)') do
-                        if i == 0 then
-                            Effect_1 = number
-                        elseif i == 1 then
-                            Effect_2 = number
-                        end
-                        i = i + 1
+            elseif rollName == "Companion's Roll" then
+                i = 0
+                for number in string.gmatch(rollDataTable['effect'], '([^,]+)') do
+                    if i == 0 then
+                        Effect_1 = number
+                    elseif i == 1 then
+                        Effect_2 = number
                     end
+                    i = i + 1
+                end
                     
-                    i = 0
-                    for number in string.gmatch(bonus, '([^,]+)') do
-                        if i == 0 then
-                            Companion_1 = number
-                             if main == 21581 then -- ROSTAM (+8)
-                                mathedEffect = Effect_2 * 8
-                                Companion_1 = Companion_1 + mathedEffect
-                            elseif main == 21580 then -- LANUN KNIFE (+7)
-                                mathedEffect = Effect_2 * 7
-                                Companion_1 = Companion_1 + mathedEffect
-                            if neck == 26038 then -- 7
-                                mathedEffect = Effect_2 * 7
-                                Companion_1 = Companion_1 + mathedEffect
-                            elseif main == 21579 then -- COMM. KNIFE (+6)
-                                mathedEffect = EffectBonus * 6
-                                Companion_1 = Companion_1 + mathedEffect
-                            elseif ring1 == 28548 or ring2 == 28548 then -- 5
-                                mathedEffect = Effect_1 * 5
-                                Companion_1 = Companion_1 + mathedEffect
-                            elseif ring1 == 28547 or ring2 == 28547 then --3
-                                mathedEffect = Effect_1 * 3
-                                Companion_1 = Companion_1 + mathedEffect
-                            end
-                        elseif i == 1 then
-                            Companion_2 = number
-                            if main == 21581 then -- ROSTAM (+8)
-                                mathedEffect = Effect_2 * 8
-                                Companion_2 = Companion_2 + mathedEffect
-                            elseif main == 21580 then -- LANUN KNIFE (+7)
-                                mathedEffect = Effect_2 * 7
-                                Companion_2 = Companion_2 + mathedEffect
-                            if neck == 26038 then -- 7
-                                mathedEffect = Effect_2 * 7
-                                Companion_2 = Companion_2 + mathedEffect
-                            elseif main == 21579 then -- COMM. KNIFE (+6)
-                                mathedEffect = EffectBonus * 6
-                                Companion_2 = Companion_2 + mathedEffect
-                            elseif ring1 == 28548 or ring2 == 28548 then -- 5
-                                mathedEffect = Effect_2 * 5
-                                Companion_2 = Companion_2 + mathedEffect
-                            elseif ring1 == 28547 or ring2 == 28547 then --3
-                                mathedEffect = Effect_2 * 3
-                                Companion_2 = Companion_2 + mathedEffect
-                            end
+                i = 0
+
+                for number in string.gmatch(bonus, '([^,]+)') do
+                    if i == 0 then
+                        Companion_1 = number
+                        if main == 21581 then -- ROSTAM (+8)
+                            mathedEffect = Effect_2 * 8
+                            Companion_1 = Companion_1 + mathedEffect
+                        elseif main == 21580 then -- LANUN KNIFE (+7)
+                            mathedEffect = Effect_2 * 7
+                            Companion_1 = Companion_1 + mathedEffect
+                        elseif neck == 26038 then -- 7
+                            mathedEffect = Effect_2 * 7
+                            Companion_1 = Companion_1 + mathedEffect
+                        elseif main == 21579 then -- COMM. KNIFE (+6)
+                            mathedEffect = EffectBonus * 6
+                            Companion_1 = Companion_1 + mathedEffect
+                        elseif ring1 == 28548 or ring2 == 28548 then -- 5
+                            mathedEffect = Effect_1 * 5
+                            Companion_1 = Companion_1 + mathedEffect
+                        elseif ring1 == 28547 or ring2 == 28547 then --3
+                            mathedEffect = Effect_1 * 3
+                            Companion_1 = Companion_1 + mathedEffect
                         end
-                        i = i + 1
+                    elseif i == 1 then
+                        Companion_2 = number
+                        if main == 21581 then -- ROSTAM (+8)
+                            mathedEffect = Effect_2 * 8
+                            Companion_2 = Companion_2 + mathedEffect
+                        elseif main == 21580 then -- LANUN KNIFE (+7)
+                            mathedEffect = Effect_2 * 7
+                            Companion_2 = Companion_2 + mathedEffect
+                        elseif neck == 26038 then -- 7
+                            mathedEffect = Effect_2 * 7
+                            Companion_2 = Companion_2 + mathedEffect
+                        elseif main == 21579 then -- COMM. KNIFE (+6)
+                            mathedEffect = EffectBonus * 6
+                            Companion_2 = Companion_2 + mathedEffect
+                        elseif ring1 == 28548 or ring2 == 28548 then -- 5
+                            mathedEffect = Effect_2 * 5
+                            Companion_2 = Companion_2 + mathedEffect
+                        elseif ring1 == 28547 or ring2 == 28547 then --3
+                            mathedEffect = Effect_2 * 3
+                            Companion_2 = Companion_2 + mathedEffect
+                        end
                     end
+                    i = i + 1
+                end
             else
                 bonus = "Unknown"
             end
-            end
         end
+
+
         percentageRolls = {'Chaos Roll', 'Corsair\'s Roll', 'Healer\'s Roll', 'Choral Roll', 'Beast Roll', 'Rogue\'s Roll', 'Fighter\'s Roll',
             'Gallant\'s Roll', 'Scholar\'s Roll', 'Naturalist\'s Roll', 'Bolter\'s Roll', 'Caster\'s Roll', 'Courser\'s Roll', 'Blitzer\'s Roll',
             'Allies\' Roll', 'Avenger\'s Roll'}
@@ -532,9 +533,7 @@ function generate_corsair_print(Number, ID, PTMembers, effected_Members)
         
         
         if messagetoshow ~= last_roll then
-            
             print('\31\200[\31\05Roll Tracker\31\200]\31\190 ' .. messagetoshow)
-        
         end
         
         last_roll = messagetoshow
