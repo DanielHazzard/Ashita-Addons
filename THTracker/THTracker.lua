@@ -134,6 +134,7 @@ ashita.register_event('command', function(cmd, nType)
 		return true;
 	elseif (args[2] == 'save') then
     		ashita.settings.save(_addon.path .. '/settings/settings.json', TH_config);
+			print('\31\200[\31\05THTracker:\31\200]\31\190 Settings saved.')
 	elseif (args[2] == 'pos' and #args > 3) then
 		TH_config.window.y = args[3]
 		TH_config.window.x = args[4]
